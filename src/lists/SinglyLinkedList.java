@@ -13,8 +13,8 @@ class Node<T>{
 }
      
 public class SinglyLinkedList<T> implements MyList<T>{
-     private Node<T> head;
-       private int size;     
+    private Node<T> head;
+    private int size;     
 
     public SinglyLinkedList(){
         this.head = null;
@@ -49,7 +49,7 @@ public class SinglyLinkedList<T> implements MyList<T>{
         return current.data;
     }
  
-    @Override
+    @Override //tener cuidado al momento del analisis
     public String toString() {
     if (isEmpty()) return "[]";
     StringBuilder sb = new StringBuilder("[");
@@ -231,6 +231,7 @@ public class SinglyLinkedList<T> implements MyList<T>{
     lista.popFront(); // Borrar cabeza
     lista.popBack();  // Borrar cola
     System.out.println("Luego de popFront y popBack: " + lista); // [8 -> 12]
+    //CUIDADO CON ESTO A LA HORA DE MEDIR CUIDADO CUIDADO
 }
 
 } 

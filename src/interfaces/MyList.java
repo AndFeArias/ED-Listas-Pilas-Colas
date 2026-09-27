@@ -6,7 +6,7 @@ public interface MyList<T>{
     T popFront();
     T popBack();
     boolean find(T data);
-    boolean erase(T data);
+    boolean erase(T data);  
     boolean addBefore(T target, T data);
     boolean addAfter(T target, T data);
 
@@ -15,5 +15,4 @@ public interface MyList<T>{
     int size();
     T topFront();
     T topBack();
-    String toString();
 }
