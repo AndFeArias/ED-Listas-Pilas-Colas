@@ -1,0 +1,20 @@
+# Compilados de Java
+*.class
+*.jar
+*.war
+
+# Carpetas de construccion
+bin/
+out/
+build/
+
+# IDEs
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+
+# Sistema operativo
+.DS_Store
+Thumbs.db   
