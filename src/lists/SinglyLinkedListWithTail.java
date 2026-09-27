@@ -140,7 +140,6 @@ public class SinglyLinkedListWithTail<T> implements MyList<T>{
             return true;
         }
 
-
         Node<T> prev = head;
         while(prev.next != null && !prev.next.data.equals(data)){
             prev = prev.next;
@@ -207,58 +206,9 @@ public class SinglyLinkedListWithTail<T> implements MyList<T>{
         return false;
     }
 
-    
-    public class Main {
     public static void main(String[] args) {
-        SinglyLinkedListWithTail<Integer> lista = new SinglyLinkedListWithTail<>();
-
-        System.out.println("=== 1. PRUEBAS DE INSERCIÓN BÁSICA ===");
-        System.out.println("¿Está vacía?: " + lista.isEmpty()); // true
-        
-        lista.pushFront(10);
-        lista.pushBack(20);
-        lista.pushFront(5);
-        lista.pushBack(30);
-        // Esperado: [5 -> 10 -> 20 -> 30]
-        System.out.println("Lista actual: " + lista); 
-        System.out.println("Tamaño: " + lista.size()); // 4
-        System.out.println("Primero (topFront): " + lista.topFront()); // 5
-        System.out.println("Último (topBack): " + lista.topBack()); // 30
-
-        System.out.println("\n=== 2. PRUEBAS DE INSERCIÓN INTERMEDIA ===");
-        // Insertar antes del 20 -> [5 -> 10 -> 15 -> 20 -> 30]
-        lista.addBefore(20, 15);
-        // Insertar después del 30 (afecta al tail) -> [5 -> 10 -> 15 -> 20 -> 30 -> 35]
-        lista.addAfter(30, 35);
-        System.out.println("Lista tras inserciones: " + lista);
-        System.out.println("Nuevo último (debe ser 35): " + lista.topBack());
-
-        System.out.println("\n=== 3. PRUEBAS DE BÚSQUEDA ===");
-        System.out.println("¿Existe el 15?: " + lista.find(15)); // true
-        System.out.println("¿Existe el 99?: " + lista.find(99)); // false
-
-        System.out.println("\n=== 4. PRUEBAS DE ELIMINACIÓN DE EXTREMOS ===");
-        System.out.println("Eliminado al frente: " + lista.popFront()); // 5
-        System.out.println("Eliminado atrás: " + lista.popBack()); // 35
-        System.out.println("Lista remanente: " + lista); // [10 -> 15 -> 20 -> 30]
-        System.out.println("Primero: " + lista.topFront() + " | Último: " + lista.topBack());
-
-        System.out.println("\n=== 5. PRUEBAS DE ELIMINACIÓN INTERMEDIA (erase) ===");
-        // Eliminar elemento intermedio
-        lista.erase(15); 
-        System.out.println("Tras borrar 15: " + lista); // [10 -> 20 -> 30]
-        
-        // Eliminar el último elemento mediante erase (debe mover el tail al 20)
-        lista.erase(30); 
-        System.out.println("Tras borrar el último (30): " + lista); // [10 -> 20]
-        System.out.println("Validando nuevo Último: " + lista.topBack()); // 20
-
-        System.out.println("\n=== 6. VACIANDO LA LISTA ===");
-        lista.popFront(); // Quita 10
-        lista.popFront(); // Quita 20 (Lista queda vacía)
-        System.out.println("Lista final: " + lista); // []
-        System.out.println("¿Está vacía al final?: " + lista.isEmpty()); // true
-        System.out.println("Tamaño final: " + lista.size()); // 0
+    
     }
-}
+
+
 }

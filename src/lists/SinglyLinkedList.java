@@ -203,35 +203,7 @@ public class SinglyLinkedList<T> implements MyList<T>{
     
 
     public static void main(String[] args) {
-    SinglyLinkedList<Integer> lista = new SinglyLinkedList<>();
-
-    System.out.println("¿Está vacía?: " + lista.isEmpty()); // true
-
-    // Probar inserciones básicas
-    lista.pushBack(10);
-    lista.pushBack(20);
-    lista.pushFront(5);
-    System.out.println("Lista inicial: " + lista); // [5 -> 10 -> 20]
-    System.out.println("Tamaño: " + lista.size()); // 3
-
-    // Probar búsquedas e inserciones intermedias
-    System.out.println("¿Existe el 10?: " + lista.find(10)); // true
-    lista.addBefore(10, 8);
-    lista.addAfter(10, 12);
-    System.out.println("Luego de insertar 8 y 12: " + lista); // [5 -> 8 -> 10 -> 12 -> 20]
-
-    // Probar lecturas de extremos
-    System.out.println("Primero (topFront): " + lista.topFront()); // 5
-    System.out.println("Último (topBack): " + lista.topBack());   // 20
-
-    // Probar eliminaciones
-    lista.erase(10); // Borrar del medio
-    System.out.println("Luego de borrar el 10: " + lista); // [5 -> 8 -> 12 -> 20]
     
-    lista.popFront(); // Borrar cabeza
-    lista.popBack();  // Borrar cola
-    System.out.println("Luego de popFront y popBack: " + lista); // [8 -> 12]
-    //CUIDADO CON ESTO A LA HORA DE MEDIR CUIDADO CUIDADO
 }
 
 } 
