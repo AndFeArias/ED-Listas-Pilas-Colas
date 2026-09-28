@@ -14,12 +14,14 @@ class Node<T>{
     }
 }
 
-public class DoublyLinkedList<T> implements MyList<T>{
+public class DoublyLinkedListWithTail<T> implements MyList<T>{
     private Node<T> head;
+    private Node<T> tail;
     private int size;
 
-    public DoublyLinkedList(){
+    public DoublyLinkedListWithTail(){
         head = null;
+        tail = null;
         size = 0;
     }
 
@@ -44,12 +46,7 @@ public class DoublyLinkedList<T> implements MyList<T>{
     public T topBack(){
         if(isEmpty()) throw new NoSuchElementException("No se puede acceder al elemento: La lista esta vacia");
 
-        Node<T> current = head;
-        while(current.next != null){
-            current = current.next;
-        }
-        
-        return current.data;
+        return tail.data;
     }
 
     @Override //tener cuidado al momento del analisis
@@ -68,38 +65,42 @@ public class DoublyLinkedList<T> implements MyList<T>{
     @Override 
     public void pushFront(T data){  
         Node<T> newNode = new Node<>(data);
-        if(!isEmpty()) head.prev = newNode;
         newNode.next = head;
-        head = newNode; 
+        newNode.prev = null;
+
+        if(!isEmpty()){
+            head.prev = newNode;
+        }else{
+            tail = newNode;
+        }
+        head = newNode;
         size++;
     }
 
     @Override 
     public void pushBack(T data){
         Node<T> newNode = new Node<>(data);
-        if(isEmpty()){
+
+        if(tail == null){
+            tail = newNode;
             head = newNode;
-            size++;
-            return;
+        }else{
+            newNode.prev = tail;
+            tail.next = newNode;
+            tail = newNode;
         }
-
-        Node<T> curr = head;
-        while(curr.next != null){
-            curr = curr.next;
-        }
-
-        curr.next = newNode;
-        newNode.prev = curr;
         size++;
     }
     
     @Override
     public T popFront() {
         if(isEmpty()) throw new NoSuchElementException("No se puede eliminar nada: La lista esta vacia");
-        
+
         T eliminado = head.data;
         head = head.next;
-        if(!isEmpty()) head.prev = null;
+        if(!isEmpty()){
+            head.prev = null;
+        }else tail = null;
         size--;
         return eliminado;
     }
@@ -107,22 +108,18 @@ public class DoublyLinkedList<T> implements MyList<T>{
     @Override 
     public T popBack(){
         if(isEmpty()) throw new NoSuchElementException("No se puede eliminar nada: La lista esta vacia");
-        T eliminado;
-        if(head.next == null){
-            eliminado = head.data;
+
+        T eliminado = tail.data;
+        if(head == tail){
             head = null;
-            size--;
-            return eliminado;
+            tail = null;
+        }else{
+            tail = tail.prev;
+            tail.next = null;
         }
-        Node<T> curr = head;
-        while(curr.next.next != null){
-            curr = curr.next;
-        }
-        eliminado = curr.next.data;
-        curr.next.prev = null;
-        curr.next = null;
         size--;
         return eliminado;
+
     }
 
 
@@ -143,27 +140,24 @@ public class DoublyLinkedList<T> implements MyList<T>{
         if(head.data.equals(data)){
             popFront();
             return true;
+        }else if(tail.data.equals(data)){
+            popBack();
+            return true;
         }
 
         Node<T> curr = head;
-        while(curr.next != null && !curr.next.data.equals(data)){
+
+        while(curr != null && !curr.data.equals(data)){
             curr = curr.next;
         }
 
-        if(curr.next != null){
-            Node<T> target = curr.next;
-            
-            curr.next = target.next;
-            if(target.next != null){
-                target.next.prev = curr;    
-            }
-
-            target.next = null;
-            target.prev = null;
+        if(curr != null){
+            curr.prev.next = curr.next;
+            curr.next.prev = curr.prev;
             size--;
             return true;
         }
-        
+
         return false;
     }
 
@@ -171,50 +165,53 @@ public class DoublyLinkedList<T> implements MyList<T>{
     public boolean addBefore(T target, T data){
         if(isEmpty()) return false;
 
-
         if(head.data.equals(target)){
             pushFront(data);
             return true;
         }
-        
-        Node<T> curr = head;
+        Node<T> newNodo = new Node<>(data);
 
+        Node<T> curr = head;
         while(curr != null && !curr.data.equals(target)){
             curr = curr.next;
         }
-
         if(curr != null){
-            Node<T> newNode = new Node<>(data);
-            newNode.next = curr;
-            newNode.prev = curr.prev;
+            newNodo.next = curr;
+            newNodo.prev = curr.prev;
 
-            curr.prev.next = newNode;
-            curr.prev = newNode;
+            curr.prev.next = newNodo;
+            curr.prev = newNodo;
             size++;
             return true;
         }
-        
+
         return false;
     }
 
     @Override public boolean addAfter(T target, T data){
         if(isEmpty()) return false;
 
+
         Node<T> curr = head;
-        Node<T> newNode = new Node<>(data);
         while(curr != null && !curr.data.equals(target)){
             curr = curr.next;
         }
-        
         if(curr != null){
+
+            if(curr == tail){
+                pushBack(data);
+                return true;
+            }
+            Node<T> newNode = new Node<>(data);
+            
             newNode.prev = curr;
             newNode.next = curr.next;
-            if(curr.next != null) curr.next.prev = newNode;
+            curr.next.prev = newNode;
             curr.next = newNode;
             size++;
             return true;
         }
-        
         return false;
     }
+
 }
