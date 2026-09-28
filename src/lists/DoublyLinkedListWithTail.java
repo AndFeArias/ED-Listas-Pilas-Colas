@@ -68,7 +68,7 @@ public class DoublyLinkedListWithTail<T> implements MyList<T>{
         newNode.next = head;
         newNode.prev = null;
 
-        if(!isEmpty()){
+        if(head != null){
             head.prev = newNode;
         }else{
             tail = newNode;
@@ -97,10 +97,17 @@ public class DoublyLinkedListWithTail<T> implements MyList<T>{
         if(isEmpty()) throw new NoSuchElementException("No se puede eliminar nada: La lista esta vacia");
 
         T eliminado = head.data;
-        head = head.next;
-        if(!isEmpty()){
+
+        if(head == tail){
+            head = null;
+            tail = null;
+        }else{
+            Node<T> temp = head;
+            head = head.next;
             head.prev = null;
-        }else tail = null;
+            temp.next = null;
+        }
+
         size--;
         return eliminado;
     }
