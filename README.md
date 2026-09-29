@@ -59,22 +59,19 @@ Este repositorio contiene la implementación desde cero en Java de las estructur
 ```text
 ED-Listas-Pilas-Colas/
 ├── src/
-│   ├── lists/
-│   │   ├── Node.java                       # Clase Nodo básica y Doble
-│   │   ├── SinglyLinkedListNoTail.java     # Lista Sencilla Sin Cola
-│   │   ├── SinglyLinkedListTail.java       # Lista Sencilla Con Cola
-│   │   ├── DoublyLinkedListNoTail.java     # Lista Doble Sin Cola
-│   │   └── DoublyLinkedListTail.java       # Lista Doble Con Cola
-│   ├── stack/
+│   ├── interfaces/
+│   │   ├── MyList.java                     # Interfaz MyList<T>
 │   │   ├── MyStack.java                    # Interfaz MyStack<T>
-│   │   └── DynamicArrayStack.java          # Implementación con Arreglo Dinámico
-│   ├── queue/
-│   │   ├── MyQueue.java                    # Interfaz MyQueue<T>
-│   │   └── CircularArrayQueue.java         # Implementación con Arreglo Circular
-│   ├── benchmark/
-│   │   ├── TimeBenchmark.java              # Lógica de medición de tiempos sin sesgo
-│   │   └── DataGenerator.java              # Generación de entradas aleatorias
-│   └── Main.java                           # Punto de entrada principal para ejecutar pruebas
+│   │   └── MyQueue.java                    # Interfaz MyQueue<T>
+│   ├── lists/
+│   │   ├── SinglyLinkedList.java           # Lista Sencilla Sin Cola
+│   │   ├── SinglyLinkedListWithTail.java   # Lista Sencilla Con Cola
+│   │   ├── DoublyLinkedList.java           # Lista Doble Sin Cola
+│   │   └── DoublyLinkedListWithTail.java   # Lista Doble Con Cola
+│   ├── stackqueue/
+│   │   ├── ArrayStack.java                 # Implementación del Stack
+│   │   └── DynamicArrayQueue.java          # Implementación con Arreglo Circular Dinamico
+│   └── main.java                           # Punto de entrada principal para ejecutar pruebas
 ├── docs/
 │   ├── Stack-Queue-Java-ED-Informe.pdf     # Informe completo con gráficos y análisis
 │   └── graficas/                           # Gráficas de tiempo vs N
