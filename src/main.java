@@ -1,3 +1,6 @@
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Random;
@@ -8,13 +11,15 @@ import lists.SinglyLinkedListWithTail;
 import stackqueue.ArrayStack;
 import stackqueue.DynamicArrayQueue;
 
+@FunctionalInterface
 interface Operation {
     void apply(int i);
 }
 
 public class main {
 
-    public static double exec(int size, String method, Operation operation) {
+    // Medimos el tiempo en microsegundos (µs)
+    public static double exec(int size, Operation operation) {
         Instant start = Instant.now();        
         
         for (int i = 0; i < size; i++) {
@@ -22,128 +27,146 @@ public class main {
         }
 
         Instant finish = Instant.now();
-        double timeElapsedMicros = Duration.between(start, finish).toNanos() / 1000.0;
+        long timeElapsedNanos = Duration.between(start, finish).toNanos();
         
-        System.out.printf("%-35s | N: %-7d | Tiempo: %10.3f µs\n", method, size, timeElapsedMicros);
-        return timeElapsedMicros;
+        // Retorna en microsegundos
+        return timeElapsedNanos / 1000.0;
     }
 
     public static void main(String[] args) {
-        // Tamaños de entrada especificados en el laboratorio (10^1 hasta 10^5)
         final int[] sizes = {10, 100, 1000, 10000, 100000};
+        final int iteraciones = 5;
         Random random = new Random();
 
-        System.out.println("===============================================================================");
-        System.out.println("            MEDICIÓN DE TIEMPOS DE EJECUCIÓN (BENCHMARK)                      ");
-        System.out.println("===============================================================================\n");
+        // Nombre del archivo de salida
+        String nombreArchivo = "resultados_benchmark.csv";
 
-        for (int size : sizes) {
-            System.out.printf("\n>>> EVALUANDO TAMAÑO DE ENTRADA N = %d <<<\n\n", size);
+        try (PrintWriter writer = new PrintWriter(new FileWriter(nombreArchivo))) {
+            // Encabezado de la tabla para Excel
+            writer.println("Estructura,Metodo,Tamano,Iteracion,Tiempo_Microsegundos");
 
-            // Se ejecutan 5 repeticiones para estabilizar y promediar si se desea
-            for (int iter = 1; iter <= 5; iter++) {
-                System.out.println("--- Iteración " + iter + " ---");
+            System.out.println("Ejecutando pruebas y generando tabla en " + nombreArchivo + "...");
 
-                // -------------------------------------------------------------
-                // 1. SINGLY LINKED LIST (Sin Tail)
-                // -------------------------------------------------------------
-                SinglyLinkedList sList = new SinglyLinkedList<>();
-                exec(size, "SinglyList - pushFront", sList::pushFront);
+            for (int size : sizes) {
+                System.out.printf("Procesando N = %d...\n", size);
 
-                SinglyLinkedList sListBack = new SinglyLinkedList<>();
-                exec(size, "SinglyList - pushBack", sListBack::pushBack);
+                for (int iter = 1; iter <= iteraciones; iter++) {
 
-                exec(size, "SinglyList - popFront", i -> {
-                    if (!sList.isEmpty()) sList.popFront();
-                });
+                    // 1. SINGLY LINKED LIST (Sin Tail)
+                    SinglyLinkedList<Integer> sList = new SinglyLinkedList<>();
+                    registrar(writer, "SinglyLinkedList", "pushFront", size, iter, exec(size, i -> sList.pushFront(i)));
+                    registrar(writer, "SinglyLinkedList", "topFront", size, iter, exec(size, i -> sList.topFront()));
+                    registrar(writer, "SinglyLinkedList", "topBack", size, iter, exec(size, i -> sList.topBack()));
+                    registrar(writer, "SinglyLinkedList", "getSize", size, iter, exec(size, i -> sList.size()));
+                    registrar(writer, "SinglyLinkedList", "isEmpty", size, iter, exec(size, i -> sList.isEmpty()));
 
-                exec(size, "SinglyList - popBack", i -> {
-                    if (!sListBack.isEmpty()) sListBack.popBack();
-                });
+                    SinglyLinkedList<Integer> sListBack = new SinglyLinkedList<>();
+                    registrar(writer, "SinglyLinkedList", "pushBack", size, iter, exec(size, i -> sListBack.pushBack(i)));
 
-                // Re-poblar para probar find y erase
-                SinglyLinkedList sListearch = new SinglyLinkedList<>();
-                for (int i = 0; i < size; i++) sListearch.pushFront(i);
-                
-                exec(size, "SinglyList - find", i -> sListearch.find(random.nextInt(size)));
-                exec(size, "SinglyList - erase", i -> sListearch.erase(random.nextInt(size)));
+                    Integer targetS = size / 2;
+                    registrar(writer, "SinglyLinkedList", "addAfter", size, iter, exec(size, i -> sListBack.addAfter(targetS, i)));
+                    registrar(writer, "SinglyLinkedList", "addBefore", size, iter, exec(size, i -> sListBack.addBefore(targetS, i)));
 
-
-                // -------------------------------------------------------------
-                // 2. SINGLY LINKED LIST WITH TAIL (Con Cola)
-                // -------------------------------------------------------------
-                SinglyLinkedListWithTail sListTail = new SinglyLinkedListWithTail<>();
-                exec(size, "SinglyListTail - pushFront", sListTail::pushFront);
-
-                SinglyLinkedListWithTail sListTailBack = new SinglyLinkedListWithTail<>();
-                exec(size, "SinglyListTail - pushBack", sListTailBack::pushBack);
-
-                exec(size, "SinglyListTail - popFront", i -> {
-                    if (!sListTail.isEmpty()) sListTail.popFront();
-                });
-
-                exec(size, "SinglyListTail - popBack", i -> {
-                    if (!sListTailBack.isEmpty()) sListTailBack.popBack();
-                });
+                    registrar(writer, "SinglyLinkedList", "find", size, iter, exec(size, i -> sListBack.find(random.nextInt(size))));
+                    registrar(writer, "SinglyLinkedList", "erase", size, iter, exec(size, i -> sListBack.erase(random.nextInt(size))));
+                    registrar(writer, "SinglyLinkedList", "popFront", size, iter, exec(size, i -> { if (!sList.isEmpty()) sList.popFront(); }));
+                    registrar(writer, "SinglyLinkedList", "popBack", size, iter, exec(size, i -> { if (!sListBack.isEmpty()) sListBack.popBack(); }));
 
 
-                // -------------------------------------------------------------
-                // 3. DOUBLY LINKED LIST (Sin Tail)
-                // -------------------------------------------------------------
-                DoublyLinkedList dList = new DoublyLinkedList<>();
-                exec(size, "DoublyList - pushFront", dList::pushFront);
+                    // 2. SINGLY LINKED LIST WITH TAIL (Con Cola)
+                    SinglyLinkedListWithTail<Integer> sListTail = new SinglyLinkedListWithTail<>();
+                    registrar(writer, "SinglyLinkedListWithTail", "pushFront", size, iter, exec(size, i -> sListTail.pushFront(i)));
+                    registrar(writer, "SinglyLinkedListWithTail", "topFront", size, iter, exec(size, i -> sListTail.topFront()));
+                    registrar(writer, "SinglyLinkedListWithTail", "topBack", size, iter, exec(size, i -> sListTail.topBack()));
+                    registrar(writer, "SinglyLinkedListWithTail", "getSize", size, iter, exec(size, i -> sListTail.size()));
+                    registrar(writer, "SinglyLinkedListWithTail", "isEmpty", size, iter, exec(size, i -> sListTail.isEmpty()));
 
-                DoublyLinkedList dListBack = new DoublyLinkedList<>();
-                exec(size, "DoublyList - pushBack", dListBack::pushBack);
+                    SinglyLinkedListWithTail<Integer> sListTailBack = new SinglyLinkedListWithTail<>();
+                    registrar(writer, "SinglyLinkedListWithTail", "pushBack", size, iter, exec(size, i -> sListTailBack.pushBack(i)));
 
-                exec(size, "DoublyList - popFront", i -> {
-                    if (!dList.isEmpty()) dList.popFront();
-                });
+                    Integer targetST = size / 2;
+                    registrar(writer, "SinglyLinkedListWithTail", "addAfter", size, iter, exec(size, i -> sListTailBack.addAfter(targetST, i)));
+                    registrar(writer, "SinglyLinkedListWithTail", "addBefore", size, iter, exec(size, i -> sListTailBack.addBefore(targetST, i)));
 
-                exec(size, "DoublyList - popBack", i -> {
-                    if (!dListBack.isEmpty()) dListBack.popBack();
-                });
-
-
-                // -------------------------------------------------------------
-                // 4. DOUBLY LINKED LIST WITH TAIL (Con Cola)
-                // -------------------------------------------------------------
-                DoublyLinkedListWithTail dListTail = new DoublyLinkedListWithTail<>();
-                exec(size, "DoublyListTail - pushFront", dListTail::pushFront);
-
-                DoublyLinkedListWithTail dListTailBack = new DoublyLinkedListWithTail<>();
-                exec(size, "DoublyListTail - pushBack", dListTailBack::pushBack);
-
-                exec(size, "DoublyListTail - popFront", i -> {
-                    if (!dListTail.isEmpty()) dListTail.popFront();
-                });
-
-                exec(size, "DoublyListTail - popBack", i -> {
-                    if (!dListTailBack.isEmpty()) dListTailBack.popBack();
-                });
+                    registrar(writer, "SinglyLinkedListWithTail", "find", size, iter, exec(size, i -> sListTailBack.find(random.nextInt(size))));
+                    registrar(writer, "SinglyLinkedListWithTail", "erase", size, iter, exec(size, i -> sListTailBack.erase(random.nextInt(size))));
+                    registrar(writer, "SinglyLinkedListWithTail", "popFront", size, iter, exec(size, i -> { if (!sListTail.isEmpty()) sListTail.popFront(); }));
+                    registrar(writer, "SinglyLinkedListWithTail", "popBack", size, iter, exec(size, i -> { if (!sListTailBack.isEmpty()) sListTailBack.popBack(); }));
 
 
-                // -------------------------------------------------------------
-                // 5. DYNAMIC ARRAY STACK (Pila)
-                // -------------------------------------------------------------
-                ArrayStack stack = new ArrayStack<>();
-                exec(size, "ArrayStack - push", stack::push);
-                exec(size, "ArrayStack - pop", i -> {
-                    if (!stack.isEmpty()) stack.pop();
-                });
+                    // 3. DOUBLY LINKED LIST (Sin Tail)
+                    DoublyLinkedList<Integer> dList = new DoublyLinkedList<>();
+                    registrar(writer, "DoublyLinkedList", "pushFront", size, iter, exec(size, i -> dList.pushFront(i)));
+                    registrar(writer, "DoublyLinkedList", "topFront", size, iter, exec(size, i -> dList.topFront()));
+                    registrar(writer, "DoublyLinkedList", "topBack", size, iter, exec(size, i -> dList.topBack()));
+                    registrar(writer, "DoublyLinkedList", "getSize", size, iter, exec(size, i -> dList.size()));
+                    registrar(writer, "DoublyLinkedList", "isEmpty", size, iter, exec(size, i -> dList.isEmpty()));
+
+                    DoublyLinkedList<Integer> dListBack = new DoublyLinkedList<>();
+                    registrar(writer, "DoublyLinkedList", "pushBack", size, iter, exec(size, i -> dListBack.pushBack(i)));
+
+                    Integer targetD = size / 2;
+                    registrar(writer, "DoublyLinkedList", "addAfter", size, iter, exec(size, i -> dListBack.addAfter(targetD, i)));
+                    registrar(writer, "DoublyLinkedList", "addBefore", size, iter, exec(size, i -> dListBack.addBefore(targetD, i)));
+
+                    registrar(writer, "DoublyLinkedList", "find", size, iter, exec(size, i -> dListBack.find(random.nextInt(size))));
+                    registrar(writer, "DoublyLinkedList", "erase", size, iter, exec(size, i -> dListBack.erase(random.nextInt(size))));
+                    registrar(writer, "DoublyLinkedList", "popFront", size, iter, exec(size, i -> { if (!dList.isEmpty()) dList.popFront(); }));
+                    registrar(writer, "DoublyLinkedList", "popBack", size, iter, exec(size, i -> { if (!dListBack.isEmpty()) dListBack.popBack(); }));
 
 
-                // -------------------------------------------------------------
-                // 6. DYNAMIC ARRAY QUEUE (Cola Circular)
-                // -------------------------------------------------------------
-                DynamicArrayQueue queue = new DynamicArrayQueue<>();
-                exec(size, "ArrayQueue - enqueue", queue::enqueue);
-                exec(size, "ArrayQueue - dequeue", i -> {
-                    if (!queue.isEmpty()) queue.dequeue();
-                });
+                    // 4. DOUBLY LINKED LIST WITH TAIL (Con Cola)
+                    DoublyLinkedListWithTail<Integer> dListTail = new DoublyLinkedListWithTail<>();
+                    registrar(writer, "DoublyLinkedListWithTail", "pushFront", size, iter, exec(size, i -> dListTail.pushFront(i)));
+                    registrar(writer, "DoublyLinkedListWithTail", "topFront", size, iter, exec(size, i -> dListTail.topFront()));
+                    registrar(writer, "DoublyLinkedListWithTail", "topBack", size, iter, exec(size, i -> dListTail.topBack()));
+                    registrar(writer, "DoublyLinkedListWithTail", "getSize", size, iter, exec(size, i -> dListTail.size()));
+                    registrar(writer, "DoublyLinkedListWithTail", "isEmpty", size, iter, exec(size, i -> dListTail.isEmpty()));
 
-                System.out.println("-------------------------------------------------------------------------------");
+                    DoublyLinkedListWithTail<Integer> dListTailBack = new DoublyLinkedListWithTail<>();
+                    registrar(writer, "DoublyLinkedListWithTail", "pushBack", size, iter, exec(size, i -> dListTailBack.pushBack(i)));
+
+                    Integer targetDT = size / 2;
+                    registrar(writer, "DoublyLinkedListWithTail", "addAfter", size, iter, exec(size, i -> dListTailBack.addAfter(targetDT, i)));
+                    registrar(writer, "DoublyLinkedListWithTail", "addBefore", size, iter, exec(size, i -> dListTailBack.addBefore(targetDT, i)));
+
+                    registrar(writer, "DoublyLinkedListWithTail", "find", size, iter, exec(size, i -> dListTailBack.find(random.nextInt(size))));
+                    registrar(writer, "DoublyLinkedListWithTail", "erase", size, iter, exec(size, i -> dListTailBack.erase(random.nextInt(size))));
+                    registrar(writer, "DoublyLinkedListWithTail", "popFront", size, iter, exec(size, i -> { if (!dListTail.isEmpty()) dListTail.popFront(); }));
+                    registrar(writer, "DoublyLinkedListWithTail", "popBack", size, iter, exec(size, i -> { if (!dListTailBack.isEmpty()) dListTailBack.popBack(); }));
+
+
+                    // 5. STACK (ArrayStack)
+                    ArrayStack<Integer> stack = new ArrayStack<>();
+                    registrar(writer, "ArrayStack", "push", size, iter, exec(size, i -> stack.push(i)));
+                    registrar(writer, "ArrayStack", "peek", size, iter, exec(size, i -> { if (!stack.isEmpty()) stack.peek(); }));
+                    registrar(writer, "ArrayStack", "size", size, iter, exec(size, i -> stack.size()));
+                    registrar(writer, "ArrayStack", "isEmpty", size, iter, exec(size, i -> stack.isEmpty()));
+                    registrar(writer, "ArrayStack", "delete", size, iter, exec(size, i -> stack.delete(random.nextInt(size))));
+                    registrar(writer, "ArrayStack", "pop", size, iter, exec(size, i -> { if (!stack.isEmpty()) stack.pop(); }));
+
+
+                    // 6. QUEUE (DynamicArrayQueue)
+                    DynamicArrayQueue<Integer> queue = new DynamicArrayQueue<>();
+                    registrar(writer, "DynamicArrayQueue", "enqueue", size, iter, exec(size, i -> queue.enqueue(i)));
+                    registrar(writer, "DynamicArrayQueue", "front", size, iter, exec(size, i -> { if (!queue.isEmpty()) queue.front(); }));
+                    registrar(writer, "DynamicArrayQueue", "size", size, iter, exec(size, i -> queue.size()));
+                    registrar(writer, "DynamicArrayQueue", "isEmpty", size, iter, exec(size, i -> queue.isEmpty()));
+                    registrar(writer, "DynamicArrayQueue", "delete", size, iter, exec(size, i -> queue.delete(random.nextInt(size))));
+                    registrar(writer, "DynamicArrayQueue", "dequeue", size, iter, exec(size, i -> { if (!queue.isEmpty()) queue.dequeue(); }));
+                }
             }
+
+            System.out.println("¡Proceso finalizado con éxito!");
+            System.out.println("Abre el archivo 'resultados_benchmark.csv' con Excel para ver la tabla completa.");
+
+        } catch (IOException e) {
+            System.err.println("Error al escribir el archivo CSV: " + e.getMessage());
         }
+    }
+
+    // Método auxiliar para escribir directamente una línea en el archivo CSV
+    private static void registrar(PrintWriter writer, String estructura, String metodo, int tamano, int iteracion, double tiempoMicros) {
+        writer.printf("%s,%s,%d,%d,%.3f\n", estructura, metodo, tamano, iteracion, tiempoMicros);
     }
 }
