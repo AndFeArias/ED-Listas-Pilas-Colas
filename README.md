@@ -18,7 +18,7 @@ Este repositorio contiene la implementación desde cero en Java de las estructur
   - [3. Colas (`MyQueue<T>`)](#3-colas-myqueuet)
 - [Análisis de Complejidad Teórica ($Big-O$)](#-análisis-de-complejidad-teórica-big-o)
 - [Medición de Tiempos y Pruebas Empíricas](#-medición-de-tiempos-y-pruebas-empíricas)
-- [Conclusiones y Lecciones Aprendidas](#-conclusiones-y-lecciones-aprendidas)
+- [Conclusiones](#-conclusiones-y-lecciones-aprendidas)
 - [Créditos](#-créditos)
 
 ---
