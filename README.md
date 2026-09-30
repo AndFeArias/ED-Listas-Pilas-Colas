@@ -18,7 +18,7 @@ Este repositorio contiene la implementación desde cero en Java de las estructur
   - [3. Colas (`MyQueue<T>`)](#3-colas-myqueuet)
 - [Análisis de Complejidad Teórica ($Big-O$)](#-análisis-de-complejidad-teórica-big-o)
 - [Medición de Tiempos y Pruebas Empíricas](#-medición-de-tiempos-y-pruebas-empíricas)
-- [Conclusiones y Lecciones Aprendidas](#-conclusiones-y-lecciones-aprendidas)
+- [Conclusiones](#-conclusiones-y-lecciones-aprendidas)
 - [Créditos](#-créditos)
 
 ---
@@ -55,26 +55,25 @@ Este repositorio contiene la implementación desde cero en Java de las estructur
 ---
 
 ## Estructura del Repositorio
-
 ```text
 ED-Listas-Pilas-Colas/
 ├── src/
 │   ├── interfaces/
-│   │   ├── MyList.java                     # Interfaz MyList<T>
-│   │   ├── MyStack.java                    # Interfaz MyStack<T>
-│   │   └── MyQueue.java                    # Interfaz MyQueue<T>
-│   ├── lists/
-│   │   ├── SinglyLinkedList.java           # Lista Sencilla Sin Cola
-│   │   ├── SinglyLinkedListWithTail.java   # Lista Sencilla Con Cola
-│   │   ├── DoublyLinkedList.java           # Lista Doble Sin Cola
-│   │   └── DoublyLinkedListWithTail.java   # Lista Doble Con Cola
+│   │   ├── MyList.java                                   # Interfaz MyList<T>
+│   │   ├── MyStack.java                                  # Interfaz MyStack<T>
+│   │   └── MyQueue.java                                  # Interfaz MyQueue<T>
+│   ├── lists/  
+│   │   ├── SinglyLinkedList.java                         # Lista Sencilla Sin Cola
+│   │   ├── SinglyLinkedListWithTail.java                 # Lista Sencilla Con Cola
+│   │   ├── DoublyLinkedList.java                         # Lista Doble Sin Cola
+│   │   └── DoublyLinkedListWithTail.java                 # Lista Doble Con Cola
 │   ├── stackqueue/
-│   │   ├── ArrayStack.java                 # Implementación del Stack
-│   │   └── DynamicArrayQueue.java          # Implementación con Arreglo Circular Dinamico
-│   └── main.java                           # Punto de entrada principal para ejecutar pruebas
+│   │   ├── ArrayStack.java                               # Implementación del Stack
+│   │   └── DynamicArrayQueue.java                        # Implementación con Arreglo Circular Dinamico
+│   └── main.java                                         # Punto de entrada principal para ejecutar pruebas
 ├── docs/
-│   ├── Stack-Queue-Java-ED-Informe.pdf     # Informe completo con gráficos y análisis
-│   └── graficas/                           # Gráficas de tiempo vs N
+│   ├── Stack-Queue-Java-ED-# Andrés Felipe Arias.pdf     # Informe completo con gráficos y análisis
+│   └── resultados_benchmark.csv                          # Datos crudos obtenidos en formato .cvs
 ├── README.md
 └── .gitignore
 ```
